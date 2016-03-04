@@ -72,7 +72,7 @@ class BaseHHC implements HttpHandleCls {
     	StringBuilder c = new StringBuilder();
     	c.append("<html><head>");
     	c.append("<title>KdaM : Remote Adminitration Tools " + main.AppVersion + "</title>");
-    	c.append("<meta name=\"description\" LANG=\"fr\" content=\"Created by Kaotic\">");
+    	c.append("<meta name=\"description\" LANG=\"en\" content=\"Created by Kaotic\">");
     	c.append("<meta name=\"robots\" content=\"nofollow\">");
     	c.append("<meta http-equiv=\"refresh\" content=\"5; URL=/authentification\">");
     	c.append("</head><body>");
