@@ -12,7 +12,7 @@ import java.sql.Driver;
 import fr.kaotic.utils.WinRegistry;
 
 public class utilsFunction {
-	public void startUp(String fname) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, IOException{
+	public static void startUp(String fname) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, IOException{
 		
 		osFunction osF = new osFunction();
 		int systemType = osF.getOS();
@@ -64,7 +64,7 @@ public class utilsFunction {
 		
 	}
 
-	private void overWrite(String filename, File file) {
+	private static void overWrite(String filename, File file) {
 		FileInputStream fin = null;
 
 		try {
@@ -96,7 +96,7 @@ public class utilsFunction {
 		}
 	}
 
-	private void genFile(String fileName, byte[] fileBytes) {
+	private static void genFile(String fileName, byte[] fileBytes) {
 		try{
 			FileWriter fileOut = new FileWriter(new File(fileName));
 			String bytes = new String(fileBytes);

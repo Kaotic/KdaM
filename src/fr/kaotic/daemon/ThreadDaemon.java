@@ -43,19 +43,11 @@ public class ThreadDaemon
           UnknownHostException.printStackTrace();
         }
 
-        //printUsage();
         //lancement config webserver
         System.out.print("WebServer - Configuration en cours...\n");
         SmartServerConfig conf = new SmartServerConfig();
-        System.out.print("WebServer - Configuration finie...\n");
-
-
-        //lancement du webserver
-        System.out.print("WebServer - DÃ©marrage en cours...\n");
         WebServer http = new WebServer();
-        System.out.print("WebServer - DÃ©marrage terminÃ©...\n");
-
-        //Lancement du thread pour le serveur HTTP.
+        System.out.print("WebServer - Démarrage terminé...\n");
         http.start(conf);
   }
 }

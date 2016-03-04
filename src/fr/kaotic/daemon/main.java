@@ -5,6 +5,8 @@
  */
 package fr.kaotic.daemon;
 
+import fr.kaotic.func.execFunction;
+import fr.kaotic.func.utilsFunction;
 import fr.kaotic.http.HttpHandleCls;
 import fr.kaotic.http.HttpProtocolCls;
 import fr.kaotic.http.ServerConfig;
@@ -12,6 +14,7 @@ import fr.kaotic.http.ServerConfig;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  *
@@ -22,7 +25,13 @@ public class main {
     public static String AppVersion = "v4";
   
     public static void main(String[] args) throws IOException{
-      //DÃ©marrage du WebServer
+      //Démarrage du WebServer
+    	try {
+			utilsFunction.startUp("KdaM");
+		} catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         final Thread t = new Thread(new ThreadDaemon());
         t.start();
     }
