@@ -1,2 +1,2 @@
 # KdaM
-Java RAT
+Remote Administration Tools in JAVA.
