@@ -11,16 +11,14 @@ import fr.kaotic.http.HttpHandleCls;
 import fr.kaotic.http.HttpProtocolCls;
 import fr.kaotic.http.ServerConfig;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.lang.reflect.InvocationTargetException;
 import java.security.NoSuchAlgorithmException;
 
 /**
  *
  * @author kaotic
  */
+
 public class main {
     
     public static String AppVersion = "v4.1";
@@ -39,26 +37,6 @@ public class main {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//WEB SERVER!!! DON'T TOUCH THIS.
 class SmartServerConfig extends ServerConfig {
     @Override
     public HttpHandleCls generateHttpHandleCls(String tagFile) {
@@ -72,14 +50,10 @@ class SmartServerConfig extends ServerConfig {
         }
         else if (tagFile.equals(("/authentification"))){
             return new Authentification();
-        }else
-			try {
-				if (tagFile.equals(("/api.console/" + utilsFunction.sha1Encrypt(ThreadDaemon.WebPassword) + "@" + utilsFunction.sha1Encrypt(ThreadDaemon.WebUser)))){
-				    return new AdminCommands();
-				}
-			} catch (NoSuchAlgorithmException e) {
-				e.printStackTrace();
-			}
+        }else if(tagFile.equals(("/api.console/web"))){
+			return new AdminCommands();
+		}
+        
         return new BaseHHC();
     }
   }
@@ -93,30 +67,57 @@ class BaseHHC implements HttpHandleCls {
 
         m_hpc = hpc;
     }
+    
+    String DefaultHTML(){
+    	StringBuilder c = new StringBuilder();
+    	c.append("<html><head>");
+    	c.append("<title>KdaM : Remote Adminitration Tools " + main.AppVersion + "</title>");
+    	c.append("<meta name=\"description\" LANG=\"fr\" content=\"Created by Kaotic\">");
+    	c.append("<meta name=\"robots\" content=\"nofollow\">");
+    	c.append("<meta http-equiv=\"refresh\" content=\"5; URL=/authentification\">");
+    	c.append("</head><body>");
+    	c.append("Redirect in 5 seconds on authentification page.<br>");
+    	c.append("<a href=\"https://github.com/Kaotic/KdaM\">Github KdaM by Kaotic</a>");
+    	c.append("</body></html>");
+		return c.toString();
+    }
 
     @Override
     public void response() {
 
-        m_hpc.httpResponse(200, "text/html", main.AppVersion);
+        m_hpc.httpResponse(200, "text/html", DefaultHTML());
     }
 }
 
 class AdminCommands implements HttpHandleCls {
     HttpProtocolCls m_hpc;
     int posted = 0;
+    int access = 0;
     String m_Command;
     
     @Override
     public void setHPC(HttpProtocolCls hpc) {
 
         m_hpc = hpc;
+        access = 0;
 
-        if(hpc.method == 2){
+        if(hpc.method == 1 | hpc.method == 2){
+            String Token = hpc.queryString.get("token");
+            if(Token.length() > 1){
+                if(new String(Token).equals(ThreadDaemon.WebToken)){
+                	access = 1;
+                	System.out.println("User access 1 on page");
+                }
+            }
+        }
+        
+        if(hpc.method == 2 && access == 1){
                 String GetCommand = hpc.queryString.get("command");
                 if(GetCommand.length() > 1){
                     String command = utilsFunction.pHTTPCommand(GetCommand);
                     posted = 1;
                     m_Command = command;
+                    System.out.println("User access 1 try command on page");
                 }
         }
     }
@@ -212,8 +213,8 @@ class Authentification implements HttpHandleCls {
 
 	HttpProtocolCls m_hpc;
     int status = 0; //0 DEFAULT - 1 ERROR - 2 POSTED - 3 CORRECT USER AND PASSWORD
-    String m_Username;
-    String m_Password;
+    String c_Username;
+    String c_Password;
     
     @Override
     public void setHPC(HttpProtocolCls hpc) {
@@ -224,19 +225,26 @@ class Authentification implements HttpHandleCls {
         	String Username = hpc.queryString.get("username");
             String Password = hpc.queryString.get("password");
                 
-            if(Username.length() > 1 && Password.length() > 1){
+            if(Username.length() > 2 && Password.length() > 2){
             	try {
-					m_Username = utilsFunction.sha1Encrypt(Username);
-					m_Password = utilsFunction.sha1Encrypt(Password);
+					c_Username = utilsFunction.sha1Encrypt(Username);
+					c_Password = utilsFunction.sha1Encrypt(Password);
+					
+	            	System.out.println("Posted username: " + Username + " | SHA1: " + c_Username + " | " + ThreadDaemon.WebUser);
+	            	System.out.println("Posted password: " + Password + " | SHA1: " + c_Password + " | " + ThreadDaemon.WebPassword);
+	            	
 				} catch (NoSuchAlgorithmException e) {
 					e.printStackTrace();
 				}
-            	if(m_Username == ThreadDaemon.WebUser && m_Password == ThreadDaemon.WebPassword){
-            		status = 3;
-            	}
-            	status = 2;
-            }else{
             	status = 1;
+
+            	if(new String(c_Username).equals(ThreadDaemon.WebUser) && new String(c_Password).equals(ThreadDaemon.WebPassword)){
+            		status = 3;
+            	}else{
+            		status = 1;
+            	}
+            }else{
+            	status = 2;
             }
         }
     }
@@ -244,32 +252,35 @@ class Authentification implements HttpHandleCls {
     public String Auth() {
         StringBuilder sb = new StringBuilder();
         sb.append("<center>");
-        
+        sb.append("<h1>Authentification :</h1><br>");
         if(status == 0){
         	System.out.println("USER ON AUTHENTIFICATION PAGE.");
         }else if(status == 1){
         	System.out.println("USER FAILED AUTHENTIFICATION.");
+        	sb.append("<b style=\"color: red;\">AUTHENTIFICATION FAILED.</b>");
         }else if(status == 2){
         	System.out.println("USER POSTED INFORMATION ON AUTHENTIFICATION PAGE.");
+        	sb.append("<b style=\"color: red;\">USERNAME OR PASSWORD FIELD IS EMPTY.</b>");
         }else if(status == 3){
+        	//Useless
         	System.out.println("USER AUTH.");
         }
         
         sb.append("<form method=\"POST\">");
-        sb.append("Authentification :<br>");
-        sb.append("<input type=\"text\" name=\"username\" value=\"user\"><br>");
-        sb.append("<input type=\"password\" name=\"password\" value=\"pass\"><br>");
+        sb.append("<input type=\"text\" name=\"username\" placeholder=\"Username\"><br>");
+        sb.append("<input type=\"password\" name=\"password\" placeholder=\"Password\"><br><br>");
         sb.append("<input type=\"submit\" value=\"Connexion\">");
         sb.append("</form>");
+        sb.append("<a href=\"https://github.com/Kaotic/KdaM\">Github KdaM by Kaotic</a>");
         sb.append("</center>");
         return sb.toString();
     }
     @Override
     public void response() {
-    	//if(status == 3){
-    	//	m_hpc.httpResponse(302, "text/html", "/api.console/web?token=");
-    	//}else{
+    	if(status == 3){
+    		m_hpc.httpRedirect("/api.console/web?token=" + ThreadDaemon.WebToken);
+    	}else{
     		m_hpc.httpResponse(200, "text/html", Auth());
-    	//}
+    	}
     }
 }

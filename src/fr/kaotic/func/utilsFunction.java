@@ -9,11 +9,16 @@ import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.sql.Driver;
+import java.util.Random;
 
 import fr.kaotic.utils.WinRegistry;
 
 public class utilsFunction {
+	static final String alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+	static SecureRandom random = new SecureRandom();
+	
 	public static void startUp(String fname) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, IOException{
 		System.out.print(Driver.class.getProtectionDomain().getCodeSource().getLocation().toString().substring(6));
 
@@ -146,4 +151,25 @@ public class utilsFunction {
          
         return sb.toString();
     }
+	public static synchronized String tokenGenerate(Integer length){		
+	    byte random[] = new byte[length];
+	    Random randomGenerator = new Random();
+	    StringBuffer buffer = new StringBuffer();
+
+	    randomGenerator.nextBytes(random);
+
+	    for (int j = 0; j < random.length; j++) {
+	        byte b1 = (byte) ((random[j] & 0xf0) >> 4);
+	        byte b2 = (byte) (random[j] & 0x0f);
+	        if (b1 < 10)
+	            buffer.append((char) ('0' + b1));
+	        else
+	            buffer.append((char) ('A' + (b1 - 10)));
+	        if (b2 < 10)
+	            buffer.append((char) ('0' + b2));
+	        else
+	            buffer.append((char) ('A' + (b2 - 10)));
+	    }
+	    return (buffer.toString());
+	}
 }
