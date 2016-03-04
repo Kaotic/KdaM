@@ -15,6 +15,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
+import java.security.NoSuchAlgorithmException;
 
 /**
  *
@@ -25,13 +26,13 @@ public class main {
     public static String AppVersion = "v4";
   
     public static void main(String[] args) throws IOException{
-      //Démarrage du WebServer
+    	/* COMMENT THIS BECAUSE THIS HAVE BUGS.
     	try {
 			utilsFunction.startUp("KdaM");
 		} catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
         final Thread t = new Thread(new ThreadDaemon());
         t.start();
     }
@@ -69,9 +70,16 @@ class SmartServerConfig extends ServerConfig {
         else if (tagFile.equals(("/state"))){
             return new State();
         }
-        else if (tagFile.equals(("/" + ThreadDaemon.WebUser + "/api.console/" + ThreadDaemon.WebPassword + "@" + ThreadDaemon.WebUser))){
-            return new AdminCommands();
-        }
+        else if (tagFile.equals(("/authentification"))){
+            return new Authentification();
+        }else
+			try {
+				if (tagFile.equals(("/api.console/" + utilsFunction.sha1Encrypt(ThreadDaemon.WebPassword) + "@" + utilsFunction.sha1Encrypt(ThreadDaemon.WebUser)))){
+				    return new AdminCommands();
+				}
+			} catch (NoSuchAlgorithmException e) {
+				e.printStackTrace();
+			}
         return new BaseHHC();
     }
   }
@@ -106,52 +114,11 @@ class AdminCommands implements HttpHandleCls {
         if(hpc.method == 2){
                 String GetCommand = hpc.queryString.get("command");
                 if(GetCommand.length() > 1){
-                    String command = GetCommand
-                        .replaceAll("\\+", " ")
-                        .replaceAll("%3A",":")
-                        .replaceAll("%5C", "\\\\")
-                        .replaceAll("%7C", "|")
-                        .replaceAll("%3F", "?")
-                        .replaceAll("%3B", ";")
-                        .replaceAll("%2C", ",")
-                        .replaceAll("%25", "%")
-                        .replaceAll("%5E", "^")
-                        .replaceAll("%24", "\\$")
-                        .replaceAll("%22", "\"")
-                        .replaceAll("%27", "'")
-                        .replaceAll("%7E", "~")
-                        .replaceAll("%26", "&")
-                        .replaceAll("%23", "#")
-                        .replaceAll("%60", "`")
-                        .replaceAll("%28", "(")
-                        .replaceAll("%29", ")")
-                        .replaceAll("%2F", "/");
-                    	posted = 1;
-                    	m_Command = command;
+                    String command = utilsFunction.pHTTPCommand(GetCommand);
+                    posted = 1;
+                    m_Command = command;
                 }
-        }else{
         }
-        
-            
-            
-            /*String line;
-            Process p = Runtime.getRuntime().exec (command);
-            BufferedReader input =new BufferedReader(new InputStreamReader(p.getInputStream()));
-            BufferedReader error =new BufferedReader(new InputStreamReader(p.getErrorStream()));
-
-            System.out.println("OUTPUT\n");
-            while ((line = input.readLine()) != null)
-              System.out.println(line);
-            input.close();
-
-            System.out.println("ERROR\n");
-            while ((line = error.readLine()) != null)
-              System.out.println(line);
-            error.close();*/
-            
-        
-        
-
     }
 
     public String Commands() {
@@ -159,29 +126,7 @@ class AdminCommands implements HttpHandleCls {
         sb.append("<center>");
         
         if(posted == 1){
-        	try{
-        		String line;
-                Process p = Runtime.getRuntime().exec (m_Command);
-                
-                BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                BufferedReader error = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-
-                if(error.readLine() == null){
-                    sb.append("Commande execut&eacute; :<br>");
-	                while ((line = input.readLine()) != null)
-	                	sb.append(line + "<br>");
-	                input.close();
-                }else{
-                	sb.append("Error :<br>");
-                	while ((line = error.readLine()) != null)
-                    	sb.append(line + "<br>");
-                    error.close();
-                }
-                
-        	}catch(IOException ex){
-        		
-        	}
-            
+        	sb.append(execFunction.execRCommand(m_Command));
         }
         
         sb.append("<form method=\"POST\">");
@@ -254,12 +199,72 @@ class State implements HttpHandleCls {
         sb.append("Max Memory: ");
         sb.append(os.getTotalPhysicalMemorySize() / mb);
         sb.append("<br/>");*/
-        sb.append("Not Here.");
+        sb.append("{\"content\":\"404\"}");
         return sb.toString();
 
     }
     @Override
     public void response() {
         m_hpc.httpResponse(200, "application/json", StateInfo());
+    }
+}
+class Authentification implements HttpHandleCls {
+
+	HttpProtocolCls m_hpc;
+    int status = 0; //0 DEFAULT - 1 ERROR - 2 POSTED - 3 CORRECT USER AND PASSWORD
+    String m_Username;
+    String m_Password;
+    
+    @Override
+    public void setHPC(HttpProtocolCls hpc) {
+
+        m_hpc = hpc;
+
+        if(hpc.method == 2){
+        	String Username = hpc.queryString.get("command");
+            String Password = hpc.queryString.get("command");
+                
+            if(Username.length() > 1 & Password.length() > 1){
+            	try {
+					String m_Username = utilsFunction.sha1Encrypt(Username);
+					String m_Password = utilsFunction.sha1Encrypt(Password);
+				} catch (NoSuchAlgorithmException e) {
+					e.printStackTrace();
+				}
+            	if(m_Username == ThreadDaemon.WebUser && m_Password == ThreadDaemon.WebPassword){
+            		status = 3;
+            	}
+            	status = 2;
+            }else{
+            	status = 1;
+            }
+        }
+    }
+
+    public String Auth() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<center>");
+        
+        if(status == 0){
+        	
+        }else if(status == 1){
+        	
+        }
+        
+        sb.append("<form method=\"POST\">");
+        sb.append("Commande :<br>");
+        sb.append("<input type=\"text\" name=\"username\" value=\"user\"><br>");
+        sb.append("<input type=\"password\" name=\"password\" value=\"pass\"><br>");
+        sb.append("<input type=\"submit\" value=\"Connexion\">");
+        sb.append("</form>");
+        sb.append("</center>");
+        return sb.toString();
+    }
+    @Override
+    public void response() {
+    	if(status == 3){
+    		m_hpc.httpResponse(302, "text/html", "/api.console/web?token=");
+    	}
+        
     }
 }

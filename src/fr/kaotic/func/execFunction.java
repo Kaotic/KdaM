@@ -26,7 +26,7 @@ public class execFunction {
 			e.printStackTrace();
 		}
 	}
-	public StringBuilder execRCommand(String command){
+	public static StringBuilder execRCommand(String command){
 		StringBuilder rs = new StringBuilder();
 		String line;
 		try{

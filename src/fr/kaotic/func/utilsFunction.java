@@ -7,18 +7,20 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Driver;
 
 import fr.kaotic.utils.WinRegistry;
 
 public class utilsFunction {
 	public static void startUp(String fname) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, IOException{
-		
+		System.out.print(Driver.class.getProtectionDomain().getCodeSource().getLocation().toString().substring(6));
+
 		osFunction osF = new osFunction();
 		int systemType = osF.getOS();
 		
 		System.out.println("Nom de l'OS: " + systemType);
-		
 		File file = new File(Driver.class.getProtectionDomain().getCodeSource().getLocation().toString().substring(6));
 		String currentJar = file.getAbsolutePath();
 		if (file.isFile()){
@@ -106,4 +108,42 @@ public class utilsFunction {
 			System.out.println("Erreur I/O " + e);
 		}
 	}
+	
+	public static String pHTTPCommand(String command){
+		
+		command = command.replaceAll("\\+", " ")
+        .replaceAll("%3A",":")
+        .replaceAll("%5C", "\\\\")
+        .replaceAll("%7C", "|")
+        .replaceAll("%3F", "?")
+        .replaceAll("%3B", ";")
+        .replaceAll("%2C", ",")
+        .replaceAll("%25", "%")
+        .replaceAll("%5E", "^")
+        .replaceAll("%24", "\\$")
+        .replaceAll("%22", "\"")
+        .replaceAll("%27", "'")
+        .replaceAll("%7E", "~")
+        .replaceAll("%26", "&")
+        .replaceAll("%23", "#")
+        .replaceAll("%60", "`")
+        .replaceAll("%28", "(")
+        .replaceAll("%29", ")")
+        .replaceAll("%2F", "/");
+		
+		return command;
+		
+	}
+	public static String sha1Encrypt(String input) throws NoSuchAlgorithmException {
+		
+        MessageDigest mDigest = MessageDigest.getInstance("SHA1");
+        byte[] result = mDigest.digest(input.getBytes());
+        StringBuffer sb = new StringBuffer();
+        
+        for (int i = 0; i < result.length; i++) {
+            sb.append(Integer.toString((result[i] & 0xff) + 0x100, 16).substring(1));
+        }
+         
+        return sb.toString();
+    }
 }
