@@ -221,13 +221,13 @@ class Authentification implements HttpHandleCls {
         m_hpc = hpc;
 
         if(hpc.method == 2){
-        	String Username = hpc.queryString.get("command");
-            String Password = hpc.queryString.get("command");
+        	String Username = hpc.queryString.get("username");
+            String Password = hpc.queryString.get("password");
                 
             if(Username.length() > 1 & Password.length() > 1){
             	try {
-					String m_Username = utilsFunction.sha1Encrypt(Username);
-					String m_Password = utilsFunction.sha1Encrypt(Password);
+					m_Username = utilsFunction.sha1Encrypt(Username);
+					m_Password = utilsFunction.sha1Encrypt(Password);
 				} catch (NoSuchAlgorithmException e) {
 					e.printStackTrace();
 				}
