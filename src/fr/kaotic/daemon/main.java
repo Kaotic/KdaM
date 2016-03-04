@@ -246,13 +246,15 @@ class Authentification implements HttpHandleCls {
         sb.append("<center>");
         
         if(status == 0){
-        	
+        	System.out.print("USER ON AUTHENTIFICATION PAGE.");
         }else if(status == 1){
-        	
+        	System.out.print("USER FAILED AUTHENTIFICATION.");
+        }else if(status == 3){
+        	System.out.print("USER AUTH.");
         }
         
         sb.append("<form method=\"POST\">");
-        sb.append("Commande :<br>");
+        sb.append("Authentification :<br>");
         sb.append("<input type=\"text\" name=\"username\" value=\"user\"><br>");
         sb.append("<input type=\"password\" name=\"password\" value=\"pass\"><br>");
         sb.append("<input type=\"submit\" value=\"Connexion\">");
