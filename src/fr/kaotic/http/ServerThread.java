@@ -36,7 +36,6 @@ public class ServerThread implements Runnable {
 				try {
 					length = m_dataReader.read(cbuf);
 				} catch (IOException e) {
-					System.out.print("WebServer - Connexion de l'IP " + m_cSocket.getInetAddress().toString().replace("/", "") + " sur la page " + hpc.target + ".\n");
 				}
 				if (length < 0) {
 					break;

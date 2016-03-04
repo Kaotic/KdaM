@@ -23,7 +23,7 @@ import java.security.NoSuchAlgorithmException;
  */
 public class main {
     
-    public static String AppVersion = "v4";
+    public static String AppVersion = "v4.1";
   
     public static void main(String[] args) throws IOException{
     	/* COMMENT THIS BECAUSE THIS HAVE BUGS.
@@ -246,11 +246,13 @@ class Authentification implements HttpHandleCls {
         sb.append("<center>");
         
         if(status == 0){
-        	System.out.print("USER ON AUTHENTIFICATION PAGE.");
+        	System.out.println("USER ON AUTHENTIFICATION PAGE.");
         }else if(status == 1){
-        	System.out.print("USER FAILED AUTHENTIFICATION.");
+        	System.out.println("USER FAILED AUTHENTIFICATION.");
+        }else if(status == 2){
+        	System.out.println("USER POSTED INFORMATION ON AUTHENTIFICATION PAGE.");
         }else if(status == 3){
-        	System.out.print("USER AUTH.");
+        	System.out.println("USER AUTH.");
         }
         
         sb.append("<form method=\"POST\">");
@@ -264,10 +266,10 @@ class Authentification implements HttpHandleCls {
     }
     @Override
     public void response() {
-    	if(status == 3){
-    		m_hpc.httpResponse(302, "text/html", "/api.console/web?token=");
-    	}else{
+    	//if(status == 3){
+    	//	m_hpc.httpResponse(302, "text/html", "/api.console/web?token=");
+    	//}else{
     		m_hpc.httpResponse(200, "text/html", Auth());
-    	}
+    	//}
     }
 }

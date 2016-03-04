@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.zip.GZIPOutputStream;
 
+import fr.kaotic.daemon.main;
+
 public class HttpProtocolCls {
 	
 	public static final int HTTP_METHOD_ERROR = 0;
@@ -53,7 +55,7 @@ public class HttpProtocolCls {
 		StringBuilder sb = new StringBuilder();
 
 		sb.append("HTTP/1.0 ").append(retCode).append(" Server OK\r\n");
-		sb.append("Server: Kaotic WebServer v3.6\r\n");
+		sb.append("Server: Kaotic WebServer " + main.AppVersion + "\r\n");
 		sb.append("Content-Type: ").append(contentType).append("\r\n");
 
 		sb.append("Content-Encoding: gzip\r\n");
@@ -75,7 +77,7 @@ public class HttpProtocolCls {
 		StringBuilder sb = new StringBuilder();
 
 		sb.append("HTTP/1.0 ").append(retCode).append(" Server OK\r\n");
-		sb.append("Server: Kaotic WebServer v3.6\r\n");
+		sb.append("Server: Kaotic WebServer " + main.AppVersion + "\r\n");
 		sb.append("Content-Type: ").append(contentType).append("\r\n");
 		sb.append("Content-Length: ");
 		sb.append(content.getBytes(DEFAULT_CHARSET).length);
@@ -90,7 +92,7 @@ public class HttpProtocolCls {
 		StringBuilder sb = new StringBuilder();
 
 		sb.append("HTTP/1.0 ").append(302).append(" Server OK\r\n");
-		sb.append("Server: Kaotic WebServer v3.6\r\n");
+		sb.append("Server: Kaotic WebServer " + main.AppVersion + "\r\n");
 		sb.append("Content-Type: text/html\r\n");
 		sb.append("Location: ").append(Url).append("\r\n");
 		sb.append("Content-Length: ").append(Url.length()).append("\r\n");

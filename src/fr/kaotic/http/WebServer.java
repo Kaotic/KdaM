@@ -11,7 +11,6 @@ public class WebServer {
 
 	
 	public void start(ServerConfig config) throws IOException {
-		System.out.print("Démarrage du serveur web");
 		ServerSocket sSocket = null;
 		sSocket = new ServerSocket(config.port());
 		final ThreadPoolExecutor threadPool = new ThreadPoolExecutor(
