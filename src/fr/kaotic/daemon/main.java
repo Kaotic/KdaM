@@ -264,7 +264,8 @@ class Authentification implements HttpHandleCls {
     public void response() {
     	if(status == 3){
     		m_hpc.httpResponse(302, "text/html", "/api.console/web?token=");
+    	}else{
+    		m_hpc.httpResponse(200, "text/html", Auth());
     	}
-        
     }
 }
