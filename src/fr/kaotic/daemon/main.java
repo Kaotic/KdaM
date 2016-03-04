@@ -224,7 +224,7 @@ class Authentification implements HttpHandleCls {
         	String Username = hpc.queryString.get("username");
             String Password = hpc.queryString.get("password");
                 
-            if(Username.length() > 1 & Password.length() > 1){
+            if(Username.length() > 1 && Password.length() > 1){
             	try {
 					m_Username = utilsFunction.sha1Encrypt(Username);
 					m_Password = utilsFunction.sha1Encrypt(Password);
